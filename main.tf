@@ -1,3 +1,27 @@
+# Security Group
+resource "aws_security_group" "nat-instance-sg" {
+  name        = "nat-instance-sg"
+  # name_prefix
+  description = "NAT Instance Security Group"
+  vpc_id      = "vpc-08aaa78fcaac1fd88"
+
+   ingress {
+    description = "Allow inbound HTTPS traffic from servers in the private subnet"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow outbound HTTP access to the Internet"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 # NAT Instance A
 resource "aws_instance" "nat-instance-a" {
   ami           = "ami-0003ce8d47722ef67" # amzn-ami-vpc-nat
@@ -10,7 +34,7 @@ resource "aws_instance" "nat-instance-a" {
   # ebs_optimized = false
   # disable_api_termination = false
   # instance_initiated_shutdown_behavior
-  instance_type = "t3.micro"
+  instance_type = "t3.nano"
   # key_name
   # get_password_data = false
   # monitoring = false
@@ -36,7 +60,7 @@ resource "aws_instance" "nat-instance-a" {
   # metadata_options
 }
 
-# NAT Instance A
+# NAT Instance B
 resource "aws_instance" "nat-instance-b" {
   ami           = "ami-0003ce8d47722ef67" # amzn-ami-vpc-nat
   # availability_zone
@@ -48,7 +72,7 @@ resource "aws_instance" "nat-instance-b" {
   # ebs_optimized = false
   # disable_api_termination = false
   # instance_initiated_shutdown_behavior
-  instance_type = "t3.micro"
+  instance_type = "t3.nano"
   # key_name
   # get_password_data = false
   # monitoring = false
@@ -72,52 +96,4 @@ resource "aws_instance" "nat-instance-b" {
   # credit_specification
   # hibernation = false
   # metadata_options
-}
-
-# Security Group
-resource "aws_security_group" "nat-instance-sg" {
-  name        = "nat-instance-sg"
-  # name_prefix
-  description = "NAT Instance Security Group"
-  vpc_id      = "vpc-08aaa78fcaac1fd88"
-
-  ingress {
-    description = "Allow inbound HTTP traffic from servers in the private subnet"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-  }
-
-   ingress {
-    description = "Allow inbound HTTPS traffic from servers in the private subnet"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-  }
-
-  ingress {
-    description = "Allow inbound SSH access to the NAT instance from your home network (over the Internet gateway) "
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["219.74.92.53/32"] # my private ip
-  }  
-
-  egress {
-    description = "Allow outbound HTTP access to the Internet"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    description = "Allow outbound HTTPS access to the Internet"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
